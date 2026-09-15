@@ -13,6 +13,11 @@
 config/logs/
 images/
 
+# Homepage 啟動時會把沒用到的整合補成空白預設檔（刪了還是會再生）。
+# 哪天真的要接 Proxmox / K8s，把對應那行拿掉再 git add 就好。
+config/kubernetes.yaml
+config/proxmox.yaml
+
 # ---- 編輯器 / 系統雜物 ----
 *.bak
 *.old
