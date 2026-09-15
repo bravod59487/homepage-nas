@@ -1,0 +1,32 @@
+---
+- 常用:
+    - Gmail:
+        - abbr: GM
+          icon: gmail.png
+          href: https://mail.google.com
+    - GitHub:
+        - abbr: GH
+          icon: github.png
+          href: https://github.com
+    - Docker Hub:
+        - abbr: DH
+          icon: docker.png
+          href: https://hub.docker.com
+
+- 自架資源:
+    - Homepage 文件:
+        - abbr: HP
+          icon: homepage.png
+          href: https://gethomepage.dev/configs/services/
+    - Homepage Widget 清單:
+        - abbr: WG
+          icon: mdi-widgets
+          href: https://gethomepage.dev/widgets/
+    - Dashboard Icons:
+        - abbr: IC
+          icon: mdi-image-multiple
+          href: https://github.com/homarr-labs/dashboard-icons
+    - Awesome Selfhosted:
+        - abbr: AS
+          icon: mdi-star
+          href: https://awesome-selfhosted.net/

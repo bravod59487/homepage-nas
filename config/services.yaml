@@ -1,0 +1,201 @@
+---
+# ============================================================
+#  NAS 版設定（Homepage 跑在 192.168.3.100）
+#
+#  server: local  → NAS 本機容器（掛 docker.sock）
+#  server: pc     → PC 192.168.3.11 的容器（透過唯讀 socket-proxy）
+#
+#  ⚠️ NAS 上的容器名稱我不知道，所以先註解起來。
+#     請到 DSM → Container Manager → 容器，把名稱抄給我，我幫你填上。
+#     沒填也能正常運作，只是少了 running/stopped 燈號與 CPU/RAM 數字。
+# ============================================================
+
+- 媒體:
+    - Immich:
+        icon: immich.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:2283
+        description: 照片備份 (NAS 主機 + PC GPU 辨識)
+        server: local
+        container: immich_server
+        widget:
+          type: immich
+          url: http://{{HOMEPAGE_VAR_NAS}}:2283
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+          version: 2
+
+    - Calibre-Web:
+        icon: calibre-web.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:8083
+        description: 電子書櫃
+        server: local
+        container: calibre-web
+        widget:
+          type: calibreweb
+          url: http://{{HOMEPAGE_VAR_NAS}}:8083
+          username: "{{HOMEPAGE_VAR_CALIBRE_USER}}"
+          password: "{{HOMEPAGE_VAR_CALIBRE_PASS}}"
+
+- 智慧家庭:
+    - Home Assistant:
+        icon: home-assistant.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:8123
+        description: 智慧家庭中樞 (Zigbee + 紅外線 + 插座)
+        server: local
+        container: homeassistant
+        widget:
+          type: homeassistant
+          url: http://{{HOMEPAGE_VAR_NAS}}:8123
+          key: "{{HOMEPAGE_VAR_HASS_TOKEN}}"
+          # 想顯示具體感測器，解除註解並換成你自己的 entity_id
+          # （HA → 開發者工具 → 狀態 可查到）
+          # custom:
+          #   - state: sensor.keting_wendu
+          #     label: 客廳溫度
+          #   - state: binary_sensor.door_switch
+          #     label: 大門
+          #   - state: sensor.roborock_battery
+          #     label: 掃地機電量
+
+    - 監視器總覽:
+        icon: mdi-cctv
+        href: http://{{HOMEPAGE_VAR_NAS}}:8123/lovelace/cameras
+        description: C220 x2 / 小米 x2 (走 HA 儀表板)
+
+- 生產力:
+    - Nextcloud:
+        icon: nextcloud.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:8080
+        description: 檔案同步與協作
+        server: local
+        container: nextcloud-app
+        widget:
+          type: nextcloud
+          url: http://{{HOMEPAGE_VAR_NAS}}:8080
+          username: "{{HOMEPAGE_VAR_NC_USER}}"
+          password: "{{HOMEPAGE_VAR_NC_PASS}}"
+
+    - n8n:
+        icon: n8n.png
+        href: https://{{HOMEPAGE_VAR_N8N}}
+        description: 自動化流程
+        server: local
+        container: n8n
+
+- 基礎設施:
+    - Synology DSM:
+        icon: synology.png
+        href: https://{{HOMEPAGE_VAR_NAS}}:5001
+        description: SA6400 主要 NAS
+        widget:
+          type: diskstation
+          url: https://{{HOMEPAGE_VAR_NAS}}:5001
+          username: "{{HOMEPAGE_VAR_DSM_USER}}"
+          password: "{{HOMEPAGE_VAR_DSM_PASS}}"
+          # volume: volume_1
+
+    - QNAP:
+        icon: qnap.png
+        href: https://{{HOMEPAGE_VAR_QNAP}}
+        description: TS-253-Pro 次要 NAS
+        widget:
+          type: qnap
+          url: https://{{HOMEPAGE_VAR_QNAP}}
+          username: "{{HOMEPAGE_VAR_QNAP_USER}}"
+          password: "{{HOMEPAGE_VAR_QNAP_PASS}}"
+
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:3001
+        description: 服務存活監控
+        server: local
+        container: uptime-kuma
+        widget:
+          type: uptimekuma
+          url: http://{{HOMEPAGE_VAR_NAS}}:3001
+          slug: "{{HOMEPAGE_VAR_KUMA_SLUG}}"
+
+    - AdGuard Home:
+        icon: adguard-home.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:81
+        description: DNS 廣告與追蹤器過濾
+        server: local
+        container: adguardhome
+        widget:
+          type: adguard
+          url: http://{{HOMEPAGE_VAR_NAS}}:81
+          username: "{{HOMEPAGE_VAR_ADGUARD_USER}}"
+          password: "{{HOMEPAGE_VAR_ADGUARD_PASS}}"
+    - ASUS 路由器:
+        icon: asus.png
+        href: https://{{HOMEPAGE_VAR_ROUTER}}:8443
+        description: 主路由 (Deco 為 AP 模式)
+
+    - Deco 設定:
+        icon: mdi-router-wireless
+        href: http://{{HOMEPAGE_VAR_DECO}}/
+        description: BE65 Mesh 主機 (客廳)
+
+- PC 主機:
+    # 這些都在 192.168.3.11，透過唯讀 socket-proxy 讀取狀態。
+    # PC 關機時會顯示離線 —— 這正是你想要的資訊。
+    - Immich 機器學習:
+        icon: immich.png
+        description: 4070 Ti 負責照片辨識
+        server: pc
+        container: immich_machine_learning
+
+    - DIUN:
+        icon: mdi-update
+        description: 容器更新通知 (每 6 小時)
+        server: pc
+        container: diun
+
+    - Socket Proxy:
+        icon: mdi-shield-lock
+        description: PC 唯讀查詢代理 (3 放行 / 25 封鎖)
+        server: pc
+        container: docker-socket-proxy
+
+    - Homepage:
+        icon: homepage.png
+        href: http://{{HOMEPAGE_VAR_NAS}}:3000
+        description: 就是這個儀表板 (NAS 本機)
+        server: local
+        container: homepage
+
+- 家庭應用:
+    # 這些都是 NAS 上的自架小工具，沒有對應的 Homepage widget，純連結。
+    - 第四台 客廳:
+        icon: mdi-television-classic
+        href: http://{{HOMEPAGE_VAR_NAS}}:1111
+        description: CATV 播放器
+        server: local
+        container: catv_living_room
+
+    - 第四台 客房:
+        icon: mdi-television-classic
+        href: http://{{HOMEPAGE_VAR_NAS}}:1112
+        description: CATV 播放器
+        server: local
+        container: catv_upper_bedroom
+
+    - 第四台 主臥:
+        icon: mdi-television-classic
+        href: http://{{HOMEPAGE_VAR_NAS}}:1113
+        description: CATV 播放器
+        server: local
+        container: catv_main_bedroom
+
+    - Switch 遊戲庫:
+        icon: mdi-nintendo-switch
+        href: http://{{HOMEPAGE_VAR_NAS}}:1234/gui
+        description: 遊戲收藏瀏覽
+        server: local
+        container: dbi_nginx
+
+    - 電子紙相框:
+        icon: mdi-image-frame
+        href: http://{{HOMEPAGE_VAR_NAS}}:15889/setting
+        description: 相框設定介面
+        server: local
+        container: e-paper_photo_frame-epf-1

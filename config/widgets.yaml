@@ -1,0 +1,33 @@
+---
+- logo:
+    icon: mdi-home-assistant
+
+- resources:
+    label: 本機 (WSL2)
+    cpu: true
+    memory: true
+    disk: /
+    uptime: true
+    # 注意：Windows Docker Desktop 下這是 WSL2 虛擬機的數字，
+    #      不是 Windows 主機真實數字。要真實數據請看下方 glances 說明。
+
+- search:
+    provider: google
+    focus: false
+    showSearchSuggestions: true
+    target: _blank
+
+- openmeteo:
+    label: 台北
+    latitude: 25.0330
+    longitude: 121.5654
+    timezone: Asia/Taipei
+    units: metric
+    cache: 5
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      dateStyle: short
+      hourCycle: h23

@@ -1,0 +1,49 @@
+---
+title: Bravod Home Lab
+description: 家庭伺服器儀表板
+startUrl: http://192.168.3.100:3000
+
+language: zh-TW
+
+theme: dark
+color: slate
+
+headerStyle: clean          # boxed | underlined | clean | boxedWidgets
+target: _blank              # 連結開新分頁
+hideVersion: true
+disableCollapse: false
+fiveColumns: false
+useEqualHeights: true
+
+# 版面：左右兩欄的排法。row = 服務橫向排列
+layout:
+  媒體:
+    style: row
+    columns: 3
+    icon: mdi-play-circle
+  智慧家庭:
+    style: row
+    columns: 3
+    icon: mdi-home-automation
+  生產力:
+    style: row
+    columns: 3
+    icon: mdi-briefcase
+  基礎設施:
+    style: row
+    columns: 4
+    icon: mdi-server-network
+  家庭應用:
+    style: row
+    columns: 3
+    icon: mdi-home-heart
+  PC 主機:
+    style: row
+    columns: 3
+    icon: mdi-docker
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  showSearchSuggestions: true
+  hideVisitURL: false

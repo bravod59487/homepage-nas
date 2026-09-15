@@ -1,0 +1,12 @@
+---
+# NAS 本機：直接掛 socket，不需要開任何埠
+local:
+  socket: /var/run/docker.sock
+
+# PC (192.168.3.11)：透過唯讀 socket-proxy
+# PC 端已部署完成並實測：3 個端點放行、25 個封鎖、所有寫入動作回傳 403
+pc:
+  # 若 PC 的有線網卡日後又被停用，把這行改成 192.168.3.13 (Wi-Fi) 即可。
+  # socket-proxy 綁的是 0.0.0.0，兩個 IP 都收得到。
+  host: 192.168.3.11
+  port: 2375

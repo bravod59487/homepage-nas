@@ -1,0 +1,3 @@
+/* 微調：讓服務卡片間距舒服一點 */
+#information-widgets { padding-left: 1rem; padding-right: 1rem; }
+.services-group { padding-top: .25rem; }

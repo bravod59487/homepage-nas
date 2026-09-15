@@ -1,0 +1,30 @@
+# ============================================================
+#  Homepage —— 部署在 Synology NAS (192.168.3.100)
+#  DSM → Container Manager → 專案 → 新增 → 選擇本資料夾
+#
+#  架構：
+#    NAS 上的容器  → 掛載本機 docker.sock 直接讀取（server: local）
+#    PC 上的容器   → 透過 PC 的唯讀 socket-proxy 讀取（server: pc）
+# ============================================================
+name: homepage
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Taipei
+      # 沒填這行會顯示 "Host validation failed"
+      - HOMEPAGE_ALLOWED_HOSTS=localhost:3000,127.0.0.1:3000,192.168.3.100:3000,homeassistant.local:3000
+    volumes:
+      - ./config:/app/config
+      - ./images:/app/public/images
+      # 讀取 NAS 本機容器狀態（唯讀）
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "diun.enable=true"

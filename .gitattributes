@@ -1,0 +1,10 @@
+# 預設：文字檔在 repo 內一律存成 LF
+#
+# 這份設定會被 clone 到 Linux（NAS）上直接給容器讀，所以簽出時也強制 LF。
+# .env.example 尤其重要：Compose 讀 .env 時 CRLF 的 \r 會留在值的尾端，
+# 密碼結尾多一個看不見的字元 —— 驗證失敗但毫無錯誤訊息。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
