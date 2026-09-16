@@ -16,9 +16,9 @@ DSM → **Container Manager → 專案 → 新增 → 選擇本資料夾**。
 **A. git clone（建議）**
 
 ```bash
-# 在 NAS 上。第一次要先設好唯讀 deploy key，見下方「NAS 上的 git 設定」
-git clone gh-homepage:bravod59487/homepage-nas.git /volume1/docker/homepage
-cd /volume1/docker/homepage
+# 在 NAS 上。第一次要先設好 SSH 金鑰，見下方「NAS 上的 git 設定」
+git clone git@github.com:bravod59487/homepage-nas.git /volume1/docker/homepage-nas
+cd /volume1/docker/homepage-nas
 cp .env.example .env          # 照註解填入金鑰；.env 不在版控裡
 docker compose up -d
 ```
@@ -46,7 +46,7 @@ Homepage 同時顯示兩台機器的容器狀態：
 | `local` | 直接掛 NAS 本機的 `/var/run/docker.sock`（唯讀） | NAS 上的容器 |
 | `pc` | 透過 PC 的唯讀 socket-proxy（`192.168.3.11:2375`） | 這台 PC 的容器 |
 
-設定在 `config\docker.yaml`。PC 端的細節見 `..\socket-proxy\README.md`。
+設定在 `config\docker.yaml`。PC 端的細節見 `..\..\socket-proxy\README.md`。
 
 > PC 關機時 Homepage 的「PC 主機」區塊會顯示離線 —— 這是刻意的，正好當作
 > PC 是否在線的指示。
@@ -123,25 +123,27 @@ compose 掛了 `./images:/app/public/images` 給自訂圖示 / 背景用。
 
 ## NAS 上的 git 設定
 
-Clone private repo 用**唯讀 deploy key**，權限只限這一個 repo。
+NAS 上**所有** private repo 共用同一把帳號金鑰（就是這台 PC 在用的那把），
+不是每個 repo 一把 deploy key。
+
+原因是 GitHub 的 deploy key **一把只能綁一個 repo**，加到第二個會被擋
+（`Key is already in use`）。NAS 上有五個 repo，要嘛五把金鑰五段 `Host` 別名，
+要嘛一把帳號金鑰。選了後者：代價是這把金鑰有帳號全部 repo 的讀寫權，
+換來的是零管理成本，而且 NAS 上也能直接 push。
 
 ```bash
-# 在 NAS 上（DSM 需先啟用 SSH、啟用使用者家目錄服務、裝好 Git Server 套件）
-ssh-keygen -t ed25519 -C "nas-homepage" -f ~/.ssh/id_ed25519_homepage -N ""
-cat ~/.ssh/id_ed25519_homepage.pub
-# → 貼到 GitHub repo → Settings → Deploy keys → Add（不要勾 Allow write access）
-
-cat >> ~/.ssh/config <<'CFG'
-Host gh-homepage
-  HostName github.com
-  User git
-  IdentityFile ~/.ssh/id_ed25519_homepage
-  IdentitiesOnly yes
-CFG
-chmod 700 ~/.ssh && chmod 600 ~/.ssh/config ~/.ssh/id_ed25519_homepage
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-ssh -T gh-homepage        # 看到 successfully authenticated 就成功
+# 在 PC 上把金鑰送過去（DSM 需先啟用 SSH 與使用者家目錄服務）
+scp $env:USERPROFILE\.ssh\id_ed25519 bravod@192.168.3.100:~/.ssh/
 ```
+```bash
+# 在 NAS 上修權限 —— 這步不能跳，權限太鬆 OpenSSH 會直接拒絕
+chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+ssh -T git@github.com     # 印出 Hi bravod59487! 就成功
+```
+
+因為只有一把，`~/.ssh/config` 不需要寫 `Host` 別名，URL 直接用
+`git@github.com:bravod59487/<repo>.git`。
 
 > **不要用 root 跑排程 `git pull`** —— root 讀不到你 SSH 使用者家目錄下的金鑰。
 > 任務排程器裡的「使用者」要選建立金鑰的那個帳號。
