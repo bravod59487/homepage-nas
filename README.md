@@ -145,5 +145,10 @@ ssh -T git@github.com     # 印出 Hi bravod59487! 就成功
 因為只有一把，`~/.ssh/config` 不需要寫 `Host` 別名，URL 直接用
 `git@github.com:bravod59487/<repo>.git`。
 
-> **不要用 root 跑排程 `git pull`** —— root 讀不到你 SSH 使用者家目錄下的金鑰。
+> **不要用 root 跑排程 `git pull`。** 原因不是權限（root 讀得到任何檔案），
+> 而是 root 的 `$HOME` 是 `/root`，ssh 會去 `/root/.ssh` 找金鑰而找不到。
 > 任務排程器裡的「使用者」要選建立金鑰的那個帳號。
+>
+> 反過來，`docker` 指令在 DSM 上一般使用者不能直接執行（不在 `docker` 群組），
+> 要加 `sudo`。所以「git pull」與「重啟容器」天生需要不同身分，
+> 別想把兩件事塞進同一個排程任務。
